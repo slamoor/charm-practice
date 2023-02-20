@@ -1,0 +1,4 @@
+
+Running as 1 OS processes: hello --mca opal_warn_on_missing_libcuda 0
+charmrun> srun -n 1 -c 2 hello --mca opal_warn_on_missing_libcuda 0
+srun: error: Unable to create step for job 1182383: More processors requested than permitted
