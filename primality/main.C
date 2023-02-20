@@ -7,6 +7,7 @@
 using namespace std;
 /*readonly*/ CProxy_Main mainProxy;
 /*mainchare*/
+//a
 class Main : public CBase_Main
 {
     int q = 0;
