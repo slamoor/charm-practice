@@ -1,0 +1,24 @@
+
+Running as 1 OS processes: hello 8 --mca opal_warn_on_missing_libcuda 0
+charmrun> /usr/bin/setarch x86_64 -R mpirun -np 1 hello 8 --mca opal_warn_on_missing_libcuda 0
+Charm++> Running on MPI library: Open MPI v4.1.1, package: Open MPI devspackswinst@dev-1.zaratan.umd.edu Distribution, ident: 4.1.1, repo rev: v4.1.1, Apr 24, 2021 (MPI standard: 3.1)
+Charm++> Level of thread support used: MPI_THREAD_FUNNELED (desired: MPI_THREAD_FUNNELED)
+Charm++> Running in SMP mode: 1 processes, 1 worker threads (PEs) + 1 comm threads per process, 1 PEs total
+Charm++> The comm. thread both sends and receives messages
+Converse/Charm++ Commit ID: v7.1.0-devel-193-gdb72e7370
+CharmLB> Load balancer assumes all CPUs are same.
+Charm++> Running on 1 hosts
+Charm++> cpu topology info is gathered in 0.005 seconds.
+CharmLB> Load balancing instrumentation for communication is off.
+Running Hello on 1 processors with 8 elements.
+Number: 88749611 Result: True
+Number: 6691010 Result: False
+Number: 37501849 Result: False
+Number: 8155619 Result: False
+Number: 47298148 Result: False
+Number: 84313731 Result: False
+Number: 65953950 Result: False
+Number: 53196450 Result: False
+Time elapsed: 0.000169
+All done.
+[Partition 0][Node 0] End of program

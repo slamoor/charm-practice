@@ -1,0 +1,13 @@
+mainmodule hello {
+    mainchare Main {
+        // Main's entry methods
+        entry Main(CkArgMsg *m);
+        entry void done();
+        entry void recv(long n, int ind, int num, int res);
+    };
+    array [1D] Hello {
+        // Hello's entry methods
+        entry Hello();
+        entry void ComputePrimeArray(long n[5], int inputSize);
+    };
+};

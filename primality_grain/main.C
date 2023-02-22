@@ -10,28 +10,41 @@ using namespace std;
 //a
 class Main : public CBase_Main
 {
-    int q = 0;
+    int numComplete = 0;
     int nElem = 0;
-    pair<long long, int> *pairs;
+    int inputSize = 0;
+    pair<long, int> *pairs;
     double st = CkWallTimer();
     public:
     Main(CkArgMsg* m)
     {
         //Start computation
         
-        long long n = 0;
-        nElem =  atoi(m->argv[1]);
-        
-        pairs = new pair<long long, int>[nElem]();
+        long n = 0;
+        /*
+        CkPrintf("crap %d\n",sizeof(m->argv)/sizeof(int));
+        if (sizeof(m->argv)/sizeof(int) != 3)
+        {
+            CkPrintf("Enter args: ./charmrun hello num_elements_per_chare num_chares\n");
+            CkExit();
+        }*/
+        nElem =  atoi(m->argv[2]);
+        inputSize = atoi(m->argv[1]);
+        pairs = new pair<long, int>[nElem*inputSize](); 
         srand (time(NULL));
-        CkPrintf("Running Hello on %d processors with %d elements.\n", CkNumPes(), nElem);
+        CkPrintf("Running Hello on %d processors with %d chares and %d numbers per chare\n", CkNumPes(), nElem, inputSize);
         CProxy_Hello arr = CProxy_Hello::ckNew(nElem); 
         mainProxy = thisProxy;
         for(int i = 0; i < nElem; i++)
         {
-            n = rand() % 100000000 + 1;
-            pairs[i] = make_pair(n, 0);
-            arr[i].SayHi(n);
+            long* slice = (long *)malloc(inputSize * sizeof(long));
+            for (int j = 0; j < inputSize; j++)
+            {
+                n = rand() % 100000000 + 1;
+                pairs[i*inputSize+j] = make_pair(n, 0);
+                slice[j] = n;
+            }
+            arr[i].ComputePrimeArray(slice, inputSize);
         }
     };
     void done()
@@ -40,18 +53,18 @@ class Main : public CBase_Main
         CkPrintf("All done.\n");
         CkExit();
     };
-    void recv(long long n, int ind, int res)
+    void recv(long n, int ind, int numarr, int res)
     {
         // Finish computation
-        q++;
+        numComplete++;
         //CkPrintf("Received %d from worker chare: %d, %d chares have finished\n",n,ind,q);
-        pairs[ind] = make_pair(pairs[ind].first, res);
-        if (q == nElem)
+        pairs[ind] = make_pair(pairs[ind*inputSize + numarr].first, res);
+        if (numComplete == nElem*inputSize)
         {   
             double ed = CkWallTimer();
             if (nElem < 20000)
             {
-                for (int i = 0; i < nElem; i++)
+                for (int i = 0; i < nElem*inputSize; i++)
                 {   
                     CkPrintf("Number: %lld Result: %s\n",pairs[i].first, pairs[i].second?"True":"False");
                 }
@@ -67,11 +80,11 @@ class Main : public CBase_Main
 class Hello : public CBase_Hello
 {
 
-    int isPrime(const long long number)
+    int isPrime(const long number)
     {
         if(number<=1) 
             return 0;
-        for(long long i=2; i<(int)(sqrt(number)); i++)
+        for(long i=2; i<(int)(sqrt(number)); i++)
             {
                 if(0 == number%i)
                     return 0;
@@ -80,11 +93,15 @@ class Hello : public CBase_Hello
     }
     public:
     Hello() {}
-    void SayHi(long long n)
+    void ComputePrimeArray(long n[], int inputSize)
     {
         //CkPrintf("%lld\n",n);
         //CkPrintf("PE %d, element %ld says %d's primality is %s.\n", CkMyPe(), thisIndex, n, isPrime(n)?"True":"False");
-        mainProxy.recv(n, thisIndex, isPrime(n));
+        for(int i = 0; i < inputSize; i++)
+        {
+            mainProxy.recv(n[i], thisIndex, i, isPrime(n[i]));
+        }
+        
         
     }
 };
